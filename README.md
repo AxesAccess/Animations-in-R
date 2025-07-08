@@ -13,7 +13,7 @@ The German Weather Service (Deutscher Wetterdienst, DWD) provides
 weather and climate data for Germany. The following scripts use DWD data
 to create animations:
 
--   [Cloudiness in Germany](Deutsche-Wetterdienst/Cloudiness.R)
--   [Air Temperature in Germany](Deutsche-Wetterdienst/Temperature.R)
+-   [Cloudiness in Germany](Deutscher-Wetterdienst/Cloudiness.Rmd)
+-   [Air Temperature in Germany](Deutscher-Wetterdienst/Temperature.Rmd)
 
 ![](Deutscher-Wetterdienst/sample.gif)

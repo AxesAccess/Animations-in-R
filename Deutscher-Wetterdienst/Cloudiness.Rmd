@@ -271,7 +271,7 @@ address and drop duplicates.
 
 ```{r join-stations-observations}
 observations <- observations[stations, on = "STATIONS_ID"]
-observations[, coud_coverage := mean(cloud_coverage, rm = T), by = h3_address]
+observations[, coud_coverage := mean(cloud_coverage, rm = T), by = c("h3_address", "MESS_DATUM")]
 observations <- observations |> unique(by = c("h3_address", "MESS_DATUM"))
 ```
 

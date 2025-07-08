@@ -274,7 +274,7 @@ address and drop duplicates.
 
 ```{r join-stations-observations}
 observations <- observations[stations, on = "STATIONS_ID"]
-observations[, coud_coverage := mean(cloud_coverage, rm = T), by = h3_address]
+observations[, temp_max := mean(temp_max, rm = T), by = c("h3_address", "MESS_DATUM")]
 observations <- observations |> unique(by = c("h3_address", "MESS_DATUM"))
 ```
 
@@ -302,10 +302,11 @@ table_dates <- seq(min_date - 7, max_date + 7, by = 1) |>
   rename(MESS_DATUM = V1)
 observations <- table_dates[observations, on = "MESS_DATUM"]
 
-observations[, temperature_r7 := rollmean(temp_max, 7, fill = "extend"),
-  by = STATIONS_ID
+observations[, temperature_r7 := rollapply(temp_max,
+  width = 7, FUN = mean, align = "center", partial = TRUE
+),
+by = STATIONS_ID
 ]
-
 dates <- seq(min_date, max_date, by = 1)
 
 if (!file.exists("figures")) {

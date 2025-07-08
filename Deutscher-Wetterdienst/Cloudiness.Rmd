@@ -44,7 +44,7 @@ library(maptiles)
 library(gifski)
 
 knitr::opts_chunk$set(dpi = 300, fig.width = 7)
-knitr::opts_knit$set(root.dir = "~/Animations-in-R/Deutscher-Wetterdienst")
+knitr::opts_knit$set(root.dir = here("Deutscher-Wetterdienst"))
 ```
 
 This is an example of how to create an animated visualization of spatial
@@ -266,13 +266,13 @@ boundaries <- geoboundaries("Germany", release_type = "gbOpen", adm_lvl = "adm1"
 ```
 
 Join the stations data with the observations data to have the geometry
-of the stations in the observations data. Calculate mean for each H3 address.
+of the stations in the observations data. Calculate mean for each H3
+address and drop duplicates.
 
 ```{r join-stations-observations}
 observations <- observations[stations, on = "STATIONS_ID"]
-observations <- observations[, .(coud_coverage = mean(cloud_coverage, rm = T)),
-  by = h3_address
-]
+observations[, coud_coverage := mean(cloud_coverage, rm = T), by = h3_address]
+observations <- observations |> unique(by = c("h3_address", "MESS_DATUM"))
 ```
 
 ## Create animations of cloud coverage in Germany
@@ -372,6 +372,8 @@ gif_file <- here(
 )
 
 gifski(png_files, gif_file, width = 1200, height = 1200, delay = 0.1, loop = TRUE)
+
+unlink(here("Deutscher-Wetterdienst", "figures", "cloudiness*"))
 ```
 
 ![](animation-cloudiness.gif)

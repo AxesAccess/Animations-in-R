@@ -52,6 +52,9 @@ rsconnect/
 Deutscher-Wetterdienst/data
 Deutscher-Wetterdienst/db
 Deutscher-Wetterdienst/figures
-Deutscher-Wetterdienst/Cloudiness_files
+Deutscher-Wetterdienst/*_files
 Deutscher-Wetterdienst/*.html
 Deutscher-Wetterdienst/*.gif
+!Deutscher-Wetterdienst/sample.gif
+*.Rproj
+*.html

@@ -16,4 +16,4 @@ to create animations:
 -   [Cloudiness in Germany](Deutsche-Wetterdienst/Cloudiness.R)
 -   [Air Temperature in Germany](Deutsche-Wetterdienst/Temperature.R)
 
-![](Deutscher-Wetterdienst/sample.gif){width="80%"}
+![](Deutscher-Wetterdienst/sample.gif)

@@ -167,11 +167,11 @@ con <- dbConnect(duckdb(),
 )
 tables <- dbGetQuery(con, "SHOW ALL TABLES;")["name"]
 
-if (!("temperature" %in% tables)) {
+start_date <- "2023-12-01"
+
+if (!("temperature" %in% tables$name)) {
   files <- list.files("data", full.names = TRUE)
   files <- files[str_detect(files, "produkt_tu_termin")]
-
-  start_date <- "2023-12-01"
 
   observations <- data.table()
 
@@ -200,7 +200,11 @@ if (!("temperature" %in% tables)) {
   dbWriteTable(con, "temperature", observations, overwrite = TRUE)
 }
 
-observations <- dbGetQuery(con, "SELECT * FROM temperature") |> as.data.table()
+observations <- dbGetQuery(
+  con,
+  sprintf("SELECT * FROM temperature WHERE MESS_DATUM >= '%s'", start_date)
+) |>
+  as.data.table()
 
 dbDisconnect(con)
 
@@ -274,7 +278,9 @@ address and drop duplicates.
 
 ```{r join-stations-observations}
 observations <- observations[stations, on = "STATIONS_ID"]
-observations[, temp_max := mean(temp_max, rm = T), by = c("h3_address", "MESS_DATUM")]
+observations[, temp_max := mean(temp_max, na.rm = TRUE),
+  by = c("h3_address", "MESS_DATUM")
+]
 observations <- observations |> unique(by = c("h3_address", "MESS_DATUM"))
 ```
 

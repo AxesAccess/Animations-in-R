@@ -124,7 +124,7 @@ links[, STATIONS_ID := as.integer(STATIONS_ID)]
 ## Filter the stations data
 
 We will download only those stations data that were active during the
-period from 2015 to 2025.
+period from 2024 to 2025.
 
 ```{r filter-stations-data}
 stations <- stations[von_datum <= "2023-12-01" & bis_datum >= "2025-01-01"]
@@ -168,11 +168,11 @@ con <- dbConnect(duckdb(),
 )
 tables <- dbGetQuery(con, "SHOW ALL TABLES;")["name"]
 
-if (!("cloudiness" %in% tables)) {
+start_date <- "2023-12-01"
+
+if (!("cloudiness" %in% tables$name)) {
   files <- list.files("data", full.names = TRUE)
   files <- files[str_detect(files, "produkt_n_termin")]
-
-  start_date <- "2023-12-01"
 
   observations <- data.table()
 
@@ -201,7 +201,11 @@ if (!("cloudiness" %in% tables)) {
   dbWriteTable(con, "cloudiness", observations, overwrite = TRUE)
 }
 
-observations <- dbGetQuery(con, "SELECT * FROM cloudiness") |> as.data.table()
+observations <- dbGetQuery(
+  con,
+  sprintf("SELECT * FROM cloudiness WHERE MESS_DATUM >= '%s'", start_date)
+) |>
+  as.data.table()
 
 dbDisconnect(con)
 
@@ -271,7 +275,9 @@ address and drop duplicates.
 
 ```{r join-stations-observations}
 observations <- observations[stations, on = "STATIONS_ID"]
-observations[, coud_coverage := mean(cloud_coverage, rm = T), by = c("h3_address", "MESS_DATUM")]
+observations[, coud_coverage := mean(cloud_coverage, na.rm = TRUE),
+  by = c("h3_address", "MESS_DATUM")
+]
 observations <- observations |> unique(by = c("h3_address", "MESS_DATUM"))
 ```
 
